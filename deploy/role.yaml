@@ -1,0 +1,14 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  creationTimestamp: null
+  name: external-service-operator
+rules:
+- apiGroups:
+  - ""
+  - apps
+  - service.lablabs.io
+  resources:
+  - '*'
+  verbs:
+  - '*'

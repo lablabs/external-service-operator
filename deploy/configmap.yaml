@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: external-service-operator
+data:
+  HTTP_PROXY: http://example-proxy:3128
+  HTTPS_PROXY: http://example-proxy:3128

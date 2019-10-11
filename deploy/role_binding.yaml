@@ -1,0 +1,11 @@
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: external-service-operator
+subjects:
+- kind: ServiceAccount
+  name: external-service-operator
+roleRef:
+  kind: Role
+  name: external-service-operator
+  apiGroup: rbac.authorization.k8s.io

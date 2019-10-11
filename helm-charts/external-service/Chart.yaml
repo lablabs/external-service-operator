@@ -1,0 +1,19 @@
+apiVersion: v1
+name: external-service
+version: 0.0.1
+appVersion: 0.0.1
+
+description: A Helm chart for kubernetes external service
+keywords:
+- service
+- endpoint
+- external
+- kube-endpoint-manager
+home: https://github.com/lablabs/external-service
+sources:
+- https://github.com/lablabs/external-service
+- https://github.com/lablabs/kube-endpoint-manager
+maintainers:
+- name: dojci
+  email: martin.dojcak@lablabs.io
+engine: gotpl

@@ -1,0 +1,120 @@
+{{ if ne .Values.type "static"}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: endpoint-manager-{{ .Release.Name }}
+  labels:
+    app.kubernetes.io/name: {{ include "external-service.name" . }}
+    helm.sh/chart: {{ include "external-service.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  {{- with .Values.manager.annotations.deployment }}
+  annotations:
+{{ toYaml . | indent 4 }}
+  {{- end }}
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "external-service.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "external-service.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+{{- with .Values.manager.labels.pod }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.manager.annotations.pod }}
+      annotations:
+{{ toYaml . | indent 8 }}
+{{- end }}
+    spec:
+      serviceAccountName: external-service-operator
+      terminationGracePeriodSeconds: 0
+      restartPolicy: Always
+      priorityClassName: {{ .Values.manager.priorityClassName }}
+      containers:
+        - name: endpoint-manager
+          image: "{{ .Values.manager.image.repository }}:{{ .Values.manager.image.tag }}"
+          imagePullPolicy: {{ .Values.manager.image.pullPolicy }}
+          env:
+            - name: ENDPOINT_TYPE
+              value: {{ .Values.type }}
+            - name: K8S_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: K8S_ENDPOINT
+              value: {{ .Release.Name }}
+            - name: SYNC_PERIOD
+              value: {{ .Values.sync | quote }}
+            {{- if hasKey .Values.filters "name"}}
+            - name: FILTER_NAME
+              value: {{ .Values.filters.name }}
+            {{- end }}
+            {{- if hasKey .Values.filters "metadata"}}
+            - name: FILTER_METADATA
+              value: {{ template "filtersMetaToString" . }}
+            {{- end }}
+            {{- if eq .Values.type "openstack" }}
+            - name: OS_AUTH_URL
+              valueFrom:
+                secretKeyRef:
+                  name: external-service-operator-openstack
+                  key: url
+            - name: OS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: external-service-operator-openstack
+                  key: username
+            - name: OS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: external-service-operator-openstack
+                  key: password
+            - name: OS_PROJECT
+              valueFrom:
+                secretKeyRef:
+                  name: external-service-operator-openstack
+                  key: project
+            {{- end }}  
+            - name: HTTP_PROXY
+              valueFrom:
+                configMapKeyRef:
+                  name: external-service-operator
+                  key: HTTP_PROXY
+                  optional: true
+            - name: HTTPS_PROXY
+              valueFrom:
+                configMapKeyRef:
+                  name: external-service-operator
+                  key: HTTPS_PROXY
+                  optional: true
+          {{- range $key, $val := .Values.manager.env }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+          {{- end}}
+      {{- with .Values.manager.resources }}
+          resources:
+{{ toYaml . | indent 12 }}
+      {{- end }}
+      {{- with .Values.manager.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+    {{- with .Values.manager.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.manager.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.manager.securityContext }}
+      securityContext:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+{{- end }}

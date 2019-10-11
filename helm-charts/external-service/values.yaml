@@ -1,0 +1,57 @@
+nameOverride: ""
+fullnameOverride: ""
+
+# External endpoint manager deployment
+manager:
+  image:
+    repository: lablabs/kube-endpoint-manager
+    tag: 0.0.3
+    pullPolicy: IfNotPresent
+
+  resources: {}
+
+  env: {}
+
+  annotations:
+    deployment: {}
+    pod: {}
+
+  labels:
+    deployment: {}
+    pod: {}
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  securityContext: {}
+
+  priorityClassName: k8s-cluster-critical
+
+
+# External service configuration
+# static/openstack
+# type: openstack
+type: static
+
+# static endpoints only
+endpoints: []
+
+# dyanmic endpoints only
+sync: 0.5
+
+# dynamic endpoints only
+filters: {}
+#filters:
+#  name: '^instance-foo-.*$'
+#  metadata:
+#    - '^project$': 'foo'
+#    - '.*service.name$:^foo$'
+#    - '.*service.namespace$:^bar'
+
+# endpoint ports
+ports:
+  http: 80
+  https: 443

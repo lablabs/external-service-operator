@@ -1,0 +1,6 @@
+---
+- version: v1alpha1
+  group: service.lablabs.io
+  kind: ExternalService
+  chart: /opt/helm/helm-charts/external-service
+  watchDependentResources: False
