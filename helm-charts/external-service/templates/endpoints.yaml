@@ -9,18 +9,19 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/type: {{ .Values.type }}
 subsets:
+{{- if eq .Values.type "static" }}
 - addresses:
-  {{- if eq .Values.type "static" }}
   {{- range .Values.endpoints }}
   - ip: {{ . }}
   {{- end }}
-  {{- else }}
+{{- else }}
+# Hack: Endpoints placeholder as notReadyAddresses
+- notReadyAddresses:
   - ip: 0.0.0.1
-  {{- end }}
+{{- end }}
   ports:
   {{- range $name, $port := .Values.ports }}
   - name: {{ $name }}
     protocol: TCP
     port: {{ $port }}
-    targetPort: {{ $port }}
   {{- end }}
