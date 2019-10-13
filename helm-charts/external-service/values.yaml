@@ -5,7 +5,7 @@ fullnameOverride: ""
 manager:
   image:
     repository: lablabs/kube-endpoint-manager
-    tag: 0.0.3
+    tag: 0.0.4
     pullPolicy: IfNotPresent
 
   resources: {}
