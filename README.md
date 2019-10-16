@@ -61,6 +61,7 @@ Parameter | Description | Required
 `spec.sync` | Sync loop period | yes
 `spec.filters.name` | Selector rule based on VM instance name. Filter value should be regexp | no
 `spec.filters.metadata` | Selector rule based on VM instance metadata. Metadata key and metadata value should be specified as regexp | no
+
 To override [Kube Endpoint Manager](https://github.com/lablabs/kube-endpoint-manager) deployment specify `spec.manager.*`, for available options see chart default values.
 
 ## Installation
